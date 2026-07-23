@@ -208,11 +208,11 @@ const COURSE_VIEW_BASE = "course-view.html?id=";
 const SKILL_COURSES = {
   Foundation: {
     All: [
-      { key: "english-foundation", level: "Free", price: 59 },
+      { key: "Foundation-Course", level: "Free", price: 59 },
       { key: "vocab500", level: "A1", price: 79 }
     ],
     Free: [
-      { key: "english-foundation", level: "Free", price: 59 }
+      { key: "Foundation-Course", level: "Free", price: 59 }
     ]
   },
   Vocabulary: {
@@ -575,7 +575,7 @@ if(trigger){
     event.preventDefault();
     const key = trigger.dataset.courseKey;
 
-    if(key === 'english-foundation'){
+    if(key === 'Foundation-Course'){
       openFoundationModal();
     }
 
