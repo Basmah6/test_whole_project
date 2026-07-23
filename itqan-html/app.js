@@ -1428,7 +1428,6 @@ function popAttachLoginEvents() {
       popLoadRegisterForm(); // العودة لإنشاء الحساب
     };
   }
-
   const forgotLink = document.getElementById("forgot-link");
   if (forgotLink) {
     forgotLink.onclick = (e) => {
