@@ -442,8 +442,9 @@ function renderCourseCard(c, lang, isPurchased = false) {
  
 // التعديل: جعل زر الكارت يستدعي handleRegistrationAction بدلاً من goToSalla مباشرة
 const actionButton = isPurchased
-  ? `<a href="../${c.key}/${c.key}/index.html" class="cta text-sm font-semibold">${buttonText}</a>`
+  ? `<a href="${getCoursePath(c.key)}" class="cta text-sm font-semibold">${buttonText}</a>`
   : `<a href="#" onclick="handleRegistrationAction('${c.key}')" class="cta text-sm font-semibold">${buttonText}</a>`;
+
 
 
   return `
@@ -1435,4 +1436,14 @@ function popAttachLoginEvents() {
       popLoadForgotForm(); // الانتقال لصفحة نسيت كلمة المرور
     };
   }
+}
+
+function getCoursePath(courseKey) {
+  if (courseKey === "english-foundation") {
+    return "../Foundation-Course/foundation-course/index.html";
+  }
+  if (courseKey === "vocab500") {
+    return "../vocab500/vocab500/index.html";
+  }
+  return "#";
 }
