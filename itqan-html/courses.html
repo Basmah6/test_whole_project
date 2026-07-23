@@ -61,12 +61,18 @@
     <p class="lead" style="margin:1.25rem auto 0;max-width:36rem" data-i18n="courses.subtitle"></p>
   </div>
 </section>
+
 <main class="container" style="padding:4rem 1.5rem">
-  <div class="flex items-center gap-2 mb-6"><span style="color:var(--primary)">★</span><h2 class="text-2xl font-bold" data-i18n="courses.featured"></h2></div>
+  <div class="flex items-center gap-2 mb-6">
+    <span style="color:var(--primary)">★</span>
+    <h2 class="text-2xl font-bold" data-i18n="courses.featured"></h2>
+  </div>
+
   <div id="featured" class="grid grid-2"></div>
 
-    <div id="skills-container">
+  <div id="skills-container">
 
+    <!-- قسم Foundation -->
     <div class="skill-block" data-skill="Foundation">
       <h2 class="skill-title">
         <img src="../images/FoundationIcon.png" class="skill-main-icon">
@@ -75,15 +81,27 @@
 
       <div class="skill-filters" id="foundation-filters"></div>
       <div class="skill-grid" id="foundation-grid"></div>
-
-      
     </div>
 
-  <div class="card card-lg text-center" style="margin-top:5rem;padding:2.5rem">
+    <!-- قسم vocab500 (المفقود سابقًا) -->
+    <div class="skill-block" data-skill="vocab500">
+      <h2 class="skill-title">
+        <img src="../images/Vocab500Icon.png" class="skill-main-icon">
+        <span>Vocabulary 500</span>
+      </h2>
 
+      <div class="skill-filters" id="vocab500-filters"></div>
+      <div class="skill-grid" id="vocab500-grid"></div>
+    </div>
+
+  </div>
+
+  <div class="card card-lg text-center" style="margin-top:5rem;padding:2.5rem">
     <h3 class="h2" data-i18n="courses.cta.title"></h3>
     <p class="muted mt-3" style="max-width:28rem;margin-left:auto;margin-right:auto" data-i18n="courses.cta.desc"></p>
-    <a href="test.html" class="cta cta-lg mt-6"><span data-i18n="courses.cta.button"></span> →</a>
+    <a href="test.html" class="cta cta-lg mt-6">
+      <span data-i18n="courses.cta.button"></span> →
+    </a>
   </div>
 </main>
 
@@ -113,6 +131,7 @@
     </div>
   </div>
 </div>
+
 
 
 
@@ -607,11 +626,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 </script>
 
-<!-- فلاتر كورس vocab500 -->
-<div id="vocab500-filters" class="filters"></div>
 
-<!-- قائمة كورسات vocab500 -->
-<div id="vocab500-courses" class="courses-grid"></div>
 
 
 </body></html>
