@@ -87,9 +87,8 @@
   </div>
 </main>
 
-<div id="foundation-modal" class="modal-backdrop hidden" aria-hidden="true">
-
-  <div id="vocab500-modal" class="modal-backdrop hidden" aria-hidden="true">
+<!-- نافذة vocab500 -->
+<div id="vocab500-modal" class="modal-backdrop hidden" aria-hidden="true">
   <div class="modal-overlay" id="vocab500-modal-overlay"></div>
   <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="vocab500-modal-title">
     <div class="modal-body"></div>
@@ -100,19 +99,20 @@
   </div>
 </div>
 
+<!-- نافذة Foundation -->
+<div id="foundation-modal" class="modal-backdrop hidden" aria-hidden="true">
   <div class="modal-overlay" id="foundation-modal-overlay"></div>
   <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="foundation-modal-title">
     <div class="modal-body">
-      <!-- foundation content is rendered dynamically based on language -->
+      <!-- foundation content is rendered dynamically -->
     </div>
-
-      <div class="modal-actions">
-        <button type="button" class="btn-secondary modal-close-btn">إغلاق</button>
-        <button type="button" class="cta modal-primary-btn">سجّل الآن</button>
-      </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary modal-close-btn">إغلاق</button>
+      <button type="button" class="cta modal-primary-btn">سجّل الآن</button>
     </div>
   </div>
 </div>
+
 
 <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 
@@ -571,8 +571,6 @@ function closeVocab500Modal(){
 
 
 
-
-
 document.addEventListener('click', function(event){
   const trigger = event.target.closest('.course-details-trigger');
 if(trigger){
@@ -604,6 +602,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await renderCourses();
   applyLang();
 });
+
 </script>
 
 
