@@ -75,16 +75,8 @@
 
       <div class="skill-filters" id="foundation-filters"></div>
       <div class="skill-grid" id="foundation-grid"></div>
-    </div>
 
-    <div class="skill-block" data-skill="Vocabulary">
-      <h2 class="skill-title">
-        <img src="../images/VocabularyIcon.png" class="skill-main-icon">
-        <span data-i18n="section.Vocabulary"></span>
-      </h2>
-
-      <div class="skill-filters" id="vocabulary-filters"></div>
-      <div class="skill-grid" id="vocabulary-grid"></div>
+      
     </div>
 
   <div class="card card-lg text-center" style="margin-top:5rem;padding:2.5rem">
@@ -96,6 +88,18 @@
 </main>
 
 <div id="foundation-modal" class="modal-backdrop hidden" aria-hidden="true">
+
+  <div id="vocab500-modal" class="modal-backdrop hidden" aria-hidden="true">
+  <div class="modal-overlay" id="vocab500-modal-overlay"></div>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="vocab500-modal-title">
+    <div class="modal-body"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary modal-close-btn">إغلاق</button>
+      <button type="button" class="cta modal-primary-btn">سجّل الآن</button>
+    </div>
+  </div>
+</div>
+
   <div class="modal-overlay" id="foundation-modal-overlay"></div>
   <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="foundation-modal-title">
     <div class="modal-body">
@@ -110,20 +114,26 @@
   </div>
 </div>
 
-<div id="vocabulary-modal" class="modal-backdrop hidden" aria-hidden="true">
-  <div class="modal-overlay" id="vocabulary-modal-overlay"></div>
-  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="vocabulary-modal-title">
-    <div class="modal-body">
-      <!-- vocabulary content is rendered dynamically based on language -->
-    </div>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
 
-      <div class="modal-actions">
-        <button type="button" class="btn-secondary modal-close-btn">إغلاق</button>
-        <button type="button" class="cta modal-primary-btn">سجّل الآن</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- 1. استدعاء مكتبة سوبابيز أولاً -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  window.supabaseClient = supabase.createClient("https://jacylpaxxgubvhofpuup.supabase.co", "sb_publishable_nZWgIK-1xvFsUEBYMfnsrw_l_Dzl2Ai");
+</script>
+
+
+
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  window.supabaseClient = supabase.createClient("https://jacylpaxxgubvhofpuup.supabase.co", "sb_publishable_nZWgIK-1xvFsUEBYMfnsrw_l_Dzl2Ai");
+</script>
+
+
+
+
 
 <footer class="footer"><div class="footer-inner">
   <div class="logo"><img src="../images/logo.png" alt="Logo" style="height:40px"></div>
@@ -192,15 +202,14 @@
 let userPurchasedKeys = [];
 let isLoggedIn = false;
 
-const COURSE_VIEW_URLS = {
-  "english-foundation": "../Foundation-Course/foundation-course/index.html",
-  "vocab500": "../vocab500/vocab500/index.html"
-};
+// المسار الموحد والثابت لفتح محتوى الدورة بعد الشراء
+const COURSE_VIEW_BASE = "course-view.html?id=";
 
 const SKILL_COURSES = {
   Foundation: {
     All: [
-      { key: "english-foundation", level: "Free", price: 59 }
+      { key: "english-foundation", level: "Free", price: 59 },
+      { key: "vocab500", level: "A1", price: 79 }
     ],
     Free: [
       { key: "english-foundation", level: "Free", price: 59 }
@@ -208,13 +217,12 @@ const SKILL_COURSES = {
   },
   Vocabulary: {
     All: [
-      { key: "vocab500", level: "A1", price: 0 }
-    ],
-    Free: [
-      { key: "vocab500", level: "A1", price: 0 }
+      { key: "vocab500", level: "A1", price: 79 }
     ]
   }
 };
+
+
 
 async function checkUserStatus() {
   if (window.supabaseClient) {
@@ -249,15 +257,22 @@ async function renderCourses(){
   if (featuredContainer) {
     featuredContainer.innerHTML = COURSES
       .filter(c => c.featured)
-      .map(c => renderCourseCard(c, lang, userPurchasedKeys.includes(c.key)))
+      .map(c => {
+        const isPurchased = userPurchasedKeys.includes(c.key);
+        const cardHtml = renderCourseCard(c, lang, isPurchased);
+        if (isPurchased) {
+         return cardHtml.replace(/href="[^"]*profile\.html[^"]*"/g, `href="${COURSE_VIEW_BASE + c.key}"`);
+
+        }
+        return cardHtml;
+      })
       .join('');
   }
   
   const LEVELS = {
-    Foundation: ["All", "Free"],
-    Vocabulary: ["All", "Free"]
+    Foundation: ["All", "Free"]
   };
-  const SKILLS = ["Foundation", "Vocabulary"];
+  const SKILLS = ["Foundation"];
 
   // نبني الفلاتر لكل مهارة
   SKILLS.forEach(skill => {
@@ -304,6 +319,7 @@ function renderSkill(skill, level){
   const courses = SKILL_COURSES[skill][level];
 
   const courseCards = courses.map((c) => {
+    // جلب بيانات الكورس بالكامل وديناميكياً من COURSES الموحدة في app.js لمنع اختفاء العربي
     const fullCourse = typeof COURSES !== 'undefined' ? COURSES.find(item => item.key === c.key) : null;
     
     const courseTitle = fullCourse ? fullCourse.title[getLang()] : (t(`skill.${c.key}.title`) !== `skill.${c.key}.title` ? t(`skill.${c.key}.title`) : c.key);
@@ -415,40 +431,6 @@ function handleRegistrationAction(courseKey) {
   }
 }
 
-function getVocabularyModalContent(lang){
-  if (lang === 'ar') {
-    return `
-      <h2 id="vocabulary-modal-title">أولاً: عن الدورة (في سطور)</h2>
-      <p>انطلق في رحلة ممتعة لتوسيع مفرداتك الإنجليزية بطريقة عملية وبسيطة، مع تركيز على الكلمات الأكثر استخدامًا في الحياة اليومية.</p>
-
-      <h3>ثانياً: محتوى الدورة (ماذا ستتعلم؟)</h3>
-      <div class="modal-list">
-        <p><strong>الوحدة 1 | المفردات الأساسية:</strong> ستتعلم كلمات شائعة جدًا وتستخدمها في محادثاتك اليومية.</p>
-        <p><strong>الوحدة 2 | التطبيق العملي:</strong> ستتدرب على فهم الكلمات في سياقات حقيقية من خلال أمثلة وأداءات.</p>
-        <p><strong>الوحدة 3 | التكرار والتمييز:</strong> ستُحسّن حفظك للفظ والمعنى باستخدام أسئلة تفاعلية وتطبيقات عملية.</p>
-      </div>
-
-      <h3>ثالثاً: الميزات التفاعلية</h3>
-      <p>تجربة داعمة تتيح لك مراجعة المفردات والاستماع إليها، ثم التطبيق الفوري عبر التمارين التفاعلية.</p>
-    `;
-  }
-
-  return `
-    <h2 id="vocabulary-modal-title">First: About the Course</h2>
-    <p>Start a practical and engaging journey to expand your English vocabulary using the most useful words for real communication.</p>
-
-    <h3>Second: Course Content (What Will You Learn?)</h3>
-    <div class="modal-list">
-      <p><strong>Unit 1 | Core Vocabulary:</strong> Learn high-frequency words that you will use in everyday interactions.</p>
-      <p><strong>Unit 2 | Practical Application:</strong> Practice vocabulary in real-life contexts using examples and guided exercises.</p>
-      <p><strong>Unit 3 | Review and Mastery:</strong> Strengthen memory and usage through interactive quizzes and repetition.</p>
-    </div>
-
-    <h3>Third: Interactive Features</h3>
-    <p>The experience is designed to help you listen, review, and use new vocabulary immediately through interactive activities.</p>
-  `;
-}
-
 function renderFoundationModal(){
   const lang = getLang();
   const modalBody = document.querySelector('#foundation-modal .modal-body');
@@ -471,41 +453,11 @@ const primaryBtn = isPurchased
   }
 }
 
-function renderVocabularyModal(){
-  const lang = getLang();
-  const modalBody = document.querySelector('#vocabulary-modal .modal-body');
-  const actions = document.querySelector('#vocabulary-modal .modal-actions');
-  
-  if(modalBody) modalBody.innerHTML = getVocabularyModalContent(lang);
-  
-  if(actions){
-    const isPurchased = userPurchasedKeys.includes('vocab500');
-    const primaryBtn = isPurchased
-      ? `<button type="button" class="cta modal-primary-btn" onclick="window.location.href='../vocab500/vocab500/index.html'">${lang === 'ar' ? 'فتح الدورة ←' : 'Open Course ←'}</button>`
-      : `<button type="button" class="cta modal-primary-btn" onclick="handleRegistrationAction('vocab500')">${lang === 'ar' ? 'سجّل الآن' : 'Register Now'}</button>`;
-
-    actions.innerHTML = `
-      <button type="button" class="btn-secondary modal-close-btn">${lang === 'ar' ? 'إغلاق' : 'Close'}</button>
-      ${primaryBtn}
-    `;
-  }
-}
-
 function openFoundationModal(event){
   if(event) event.preventDefault();
   const modal = document.getElementById('foundation-modal');
   if(!modal) return;
   renderFoundationModal();
-  modal.classList.remove('hidden');
-  modal.setAttribute('aria-hidden','false');
-  document.body.style.overflow = 'hidden';
-}
-
-function openVocabularyModal(event){
-  if(event) event.preventDefault();
-  const modal = document.getElementById('vocabulary-modal');
-  if(!modal) return;
-  renderVocabularyModal();
   modal.classList.remove('hidden');
   modal.setAttribute('aria-hidden','false');
   document.body.style.overflow = 'hidden';
@@ -519,39 +471,128 @@ function closeFoundationModal(){
   document.body.style.overflow = '';
 }
 
-function closeVocabularyModal(){
-  const modal = document.getElementById('vocabulary-modal');
+function renderVocab500Modal(){
+  const lang = getLang();
+  const modalBody = document.querySelector('#vocab500-modal .modal-body');
+  const actions = document.querySelector('#vocab500-modal .modal-actions');
+
+  if(modalBody) modalBody.innerHTML = getVocab500ModalContent(lang);
+
+  if(actions){
+    const isPurchased = userPurchasedKeys.includes('vocab500');
+
+    const primaryBtn = isPurchased
+      ? `<button type="button" class="cta modal-primary-btn" onclick="window.location.href='../vocab500/vocab500/index.html'">${lang === 'ar' ? 'فتح الدورة ←' : 'Open Course ←'}</button>`
+      : `<button type="button" class="cta modal-primary-btn" onclick="handleRegistrationAction('vocab500')">${lang === 'ar' ? 'سجّل الآن' : 'Register Now'}</button>`;
+
+    actions.innerHTML = `
+      <button type="button" class="btn-secondary modal-close-btn">${lang === 'ar' ? 'إغلاق' : 'Close'}</button>
+      ${primaryBtn}
+    `;
+  }
+}
+
+
+function getVocab500ModalContent(lang){
+  if(lang === 'ar'){
+    return `
+      <h2 id="vocab500-modal-title">أولاً: عن الدورة (في سطور)</h2>
+      <p>احفظ أهم 500 كلمة لمستوى A1 بطريقة تفاعلية ممتعة وسهلة، مع تمارين تطبيقية وصوتيات لكل كلمة.</p>
+
+      <h3>ثانياً: محتوى الدورة (ماذا ستتعلم؟)</h3>
+      <div class="modal-list">
+        <p><strong>الوحدة 1 | كلمات الحياة اليومية:</strong> أهم الكلمات المستخدمة يوميًا.</p>
+        <p><strong>الوحدة 2 | كلمات الأماكن:</strong> كلمات الأماكن الشائعة في الحياة.</p>
+        <p><strong>الوحدة 3 | كلمات الأشخاص:</strong> مفردات الأشخاص والعلاقات.</p>
+        <p><strong>الوحدة 4 | كلمات الأشياء:</strong> مفردات الأشياء الأكثر استخدامًا.</p>
+        <p><strong>الوحدة 5 | كلمات الأفعال:</strong> أهم الأفعال الأساسية للمستوى الأول.</p>
+        <p><strong>الوحدة 6 | مراجعة وتطبيق:</strong> تمارين تفاعلية لاختبار حفظ الكلمات.</p>
+      </div>
+
+      <h3>ثالثاً: الميزات التفاعلية</h3>
+      <div class="modal-list">
+        <p><strong>نطق صوتي لكل كلمة:</strong> استمع للنطق الصحيح فورًا.</p>
+        <p><strong>تمارين حفظ:</strong> اختبارات قصيرة بعد كل مجموعة كلمات.</p>
+        <p><strong>اختبار نهائي:</strong> يقيس مدى حفظك للـ 500 كلمة.</p>
+      </div>
+    `;
+  }
+
+  return `
+      <h2 id="vocab500-modal-title">About the Course</h2>
+      <p>Master the most essential 500 A1 words through interactive practice, audio pronunciation, and smart review activities.</p>
+
+      <h3>Course Content</h3>
+      <div class="modal-list">
+        <p><strong>Unit 1 | Daily Life Words</strong></p>
+        <p><strong>Unit 2 | Places Vocabulary</strong></p>
+        <p><strong>Unit 3 | People Vocabulary</strong></p>
+        <p><strong>Unit 4 | Objects Vocabulary</strong></p>
+        <p><strong>Unit 5 | Basic Verbs</strong></p>
+        <p><strong>Unit 6 | Review & Practice</strong></p>
+      </div>
+
+      <h3>Interactive Features</h3>
+      <div class="modal-list">
+        <p><strong>Audio Pronunciation:</strong> Listen to every word.</p>
+        <p><strong>Practice Activities:</strong> Short quizzes after each unit.</p>
+        <p><strong>Final Exam:</strong> Test your mastery of all 500 words.</p>
+      </div>
+    `;
+}
+
+
+
+
+
+function openVocab500Modal(event){
+  if(event) event.preventDefault();
+  const modal = document.getElementById('vocab500-modal');
+  if(!modal) return;
+  renderVocab500Modal();
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+}
+
+
+
+function closeVocab500Modal(){
+  const modal = document.getElementById('vocab500-modal');
   if(!modal) return;
   modal.classList.add('hidden');
   modal.setAttribute('aria-hidden','true');
   document.body.style.overflow = '';
 }
 
+
+
+
+
 document.addEventListener('click', function(event){
   const trigger = event.target.closest('.course-details-trigger');
-  if(trigger){
+if(trigger){
     event.preventDefault();
-    const courseKey = trigger.getAttribute('data-course-key');
-    if(courseKey === 'vocab500') {
-      openVocabularyModal();
-    } else {
+    const key = trigger.dataset.courseKey;
+
+    if(key === 'english-foundation'){
       openFoundationModal();
     }
+
+    if(key === 'vocab500'){
+      openVocab500Modal();
+    }
+
     return;
-  }
+}
+
   if(event.target.closest('.modal-close-btn') || event.target.id === 'foundation-modal-overlay'){
     closeFoundationModal();
-  }
-  if(event.target.closest('.modal-close-btn') || event.target.id === 'vocabulary-modal-overlay'){
-    closeVocabularyModal();
   }
 });
 
 document.addEventListener('keydown', function(event){
-  if(event.key === 'Escape') {
-    closeFoundationModal();
-    closeVocabularyModal();
-  }
+  if(event.key === 'Escape') closeFoundationModal();
 });
 
 // تشغيل وتهيئة الصفحة بالتزامن
