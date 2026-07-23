@@ -260,10 +260,14 @@ async function renderCourses(){
       .map(c => {
         const isPurchased = userPurchasedKeys.includes(c.key);
         const cardHtml = renderCourseCard(c, lang, isPurchased);
-        if (isPurchased) {
-         return cardHtml.replace(/href="[^"]*profile\.html[^"]*"/g, `href="${COURSE_VIEW_BASE + c.key}"`);
+   if (isPurchased) {
+  return cardHtml.replace(
+    /href="[^"]*profile\.html[^"]*"/g,
+    `href="${getCoursePath(c.key)}"`
+  );
+}
 
-        }
+
         return cardHtml;
       })
       .join('');
