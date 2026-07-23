@@ -273,35 +273,37 @@ async function renderCourses(){
       .join('');
   }
   
-  const LEVELS = {
-    Foundation: ["All", "Free"]
-  };
-  const SKILLS = ["Foundation"];
+const LEVELS = {
+  Foundation: ["All", "Free"],
+  vocab500: ["All"]   // ← أضفنا مستوى واحد فقط، يكفي لعرض الكورس
+};
 
-  // نبني الفلاتر لكل مهارة
-  SKILLS.forEach(skill => {
-    const filterEl = document.getElementById(`${skill.toLowerCase()}-filters`);
-    if (filterEl) {
-      filterEl.innerHTML = LEVELS[skill].map(level => {
-        let label = level;
-        if(level === "All") label = t("filter.all");
-        else if(level === "Free") label = t("filter.free");
-        else if(level.startsWith("+")){
-          const num = level.replace("+","");
-          label = getLang() === "ar" ? "+" + num.replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]) : level;
-        }
+const SKILLS = ["Foundation", "vocab500"];   // ← الآن سيعرض الكورسين
+  
 
-        return `
-          <button class="filter-btn" onclick="setActiveFilter(this, '${skill}', '${level}')">
-            ${label}
-          </button>
-        `;
-      }).join('');
-    }
+// نبني الفلاتر لكل مهارة
+SKILLS.forEach(skill => {
+  const filterEl = document.getElementById(`${skill.toLowerCase()}-filters`);
+  if (filterEl) {
+    filterEl.innerHTML = LEVELS[skill].map(level => {
+      let label = level;
+      if(level === "All") label = t("filter.all");
+      else if(level === "Free") label = t("filter.free");
+      else if(level.startsWith("+")){
+        const num = level.replace("+","");
+        label = getLang() === "ar" ? "+" + num.replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]) : level;
+      }
 
-    renderSkill(skill, "All");
-  });
-}
+      return `
+        <button class="filter-btn" onclick="setActiveFilter(this, '${skill}', '${level}')">
+          ${label}
+        </button>
+      `;
+    }).join('');
+  }
+
+  renderSkill(skill, "All");   // ← الآن سيعرض Foundation و vocab500
+});
 
 function setActiveFilter(btn, skill, level){
   document.querySelectorAll(`#${skill.toLowerCase()}-filters .filter-btn`)
