@@ -87,6 +87,7 @@
   </div>
 </main>
 
+
 <!-- نافذة vocab500 -->
 <div id="vocab500-modal" class="modal-backdrop hidden" aria-hidden="true">
   <div class="modal-overlay" id="vocab500-modal-overlay"></div>
@@ -112,6 +113,7 @@
     </div>
   </div>
 </div>
+
 
 
 <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
@@ -273,37 +275,35 @@ async function renderCourses(){
       .join('');
   }
   
-const LEVELS = {
-  Foundation: ["All", "Free"],
-  vocab500: ["All"]   // ← أضفنا مستوى واحد فقط، يكفي لعرض الكورس
-};
+  const LEVELS = {
+    Foundation: ["All", "Free"]
+  };
+  const SKILLS = ["Foundation"];
 
-const SKILLS = ["Foundation", "vocab500"];   // ← الآن سيعرض الكورسين
-  
+  // نبني الفلاتر لكل مهارة
+  SKILLS.forEach(skill => {
+    const filterEl = document.getElementById(`${skill.toLowerCase()}-filters`);
+    if (filterEl) {
+      filterEl.innerHTML = LEVELS[skill].map(level => {
+        let label = level;
+        if(level === "All") label = t("filter.all");
+        else if(level === "Free") label = t("filter.free");
+        else if(level.startsWith("+")){
+          const num = level.replace("+","");
+          label = getLang() === "ar" ? "+" + num.replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]) : level;
+        }
 
-// نبني الفلاتر لكل مهارة
-SKILLS.forEach(skill => {
-  const filterEl = document.getElementById(`${skill.toLowerCase()}-filters`);
-  if (filterEl) {
-    filterEl.innerHTML = LEVELS[skill].map(level => {
-      let label = level;
-      if(level === "All") label = t("filter.all");
-      else if(level === "Free") label = t("filter.free");
-      else if(level.startsWith("+")){
-        const num = level.replace("+","");
-        label = getLang() === "ar" ? "+" + num.replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]) : level;
-      }
+        return `
+          <button class="filter-btn" onclick="setActiveFilter(this, '${skill}', '${level}')">
+            ${label}
+          </button>
+        `;
+      }).join('');
+    }
 
-      return `
-        <button class="filter-btn" onclick="setActiveFilter(this, '${skill}', '${level}')">
-          ${label}
-        </button>
-      `;
-    }).join('');
-  }
-
-  renderSkill(skill, "All");   // ← الآن سيعرض Foundation و vocab500
-});
+    renderSkill(skill, "All");
+  });
+}
 
 function setActiveFilter(btn, skill, level){
   document.querySelectorAll(`#${skill.toLowerCase()}-filters .filter-btn`)
