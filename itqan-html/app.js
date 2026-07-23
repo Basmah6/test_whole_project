@@ -433,20 +433,18 @@ function formatNumber(num) {
 
 
 function renderCourseCard(c, lang, isPurchased = false) {
+  // تحديد نص الزر والترجمة المناسبة بناءً على اللغة وحالة الشراء
   const buttonText = isPurchased 
     ? (lang === 'ar' ? "فتح الدورة ←" : "Open Course ←") 
     : `${t("courses.enroll")} →`;
 
-  const targetUrlMap = {
-    "english-foundation": "../Foundation-Course/foundation-course/index.html",
-    "vocab500": "../vocab500/vocab500/index.html"
-  };
+  // بناء الزر ديناميكياً: لو مشترك يوجه لصفحة الكورس، لو مو مشترك يشغل دالة الشراء
+ 
+// التعديل: جعل زر الكارت يستدعي handleRegistrationAction بدلاً من goToSalla مباشرة
+const actionButton = isPurchased
+  ? `<a href="../${c.key}/${c.key}/index.html" class="cta text-sm font-semibold">${buttonText}</a>`
+  : `<a href="#" onclick="handleRegistrationAction('${c.key}')" class="cta text-sm font-semibold">${buttonText}</a>`;
 
-  const targetUrl = targetUrlMap[c.key] || "#";
-
-  const actionButton = isPurchased
-    ? `<a href="${targetUrl}" class="cta text-sm font-semibold">${buttonText}</a>`
-    : `<a href="#" onclick="handleRegistrationAction('${c.key}')" class="cta text-sm font-semibold">${buttonText}</a>`;
 
   return `
     <article class="card" style="background:var(--card);color:var(--foreground)">
@@ -474,6 +472,7 @@ function renderCourseCard(c, lang, isPurchased = false) {
     </article>
   `;
 }
+
 const QUESTIONS = [
 
   // -------------------------
@@ -709,16 +708,18 @@ const COURSES = [
     },
     featured: true
   },
+
+  // ⭐⭐⭐ إضافة دورة الـ 500 كلمة ⭐⭐⭐
   {
     id: "vocab500",
     key: "vocab500",
     title: {
-      en: "Vocabulary Course",
-      ar: "دورة المفردات"
+      en: "Vocabulary 500 Course",
+      ar: "كورس ال 500 كلمة للمستوى الأول"
     },
     description: {
-      en: "Master essential vocabulary with clear explanations, audio support, and guided practice.",
-      ar: "أتقن المفردات الأساسية مع شرح واضح، دعم صوتي، وتمارين موجهة."
+      en: "Master the most essential 500 A1 words through interactive practice and audio pronunciation.",
+      ar: "احفظ أهم 500 كلمة لمستوى A1 بطريقة تفاعلية ممتعة مع نطق صوتي وتمارين تطبيقية."
     },
     level: "A1",
     category: {
@@ -726,17 +727,18 @@ const COURSES = [
       ar: "مفردات"
     },
     duration: {
-      en: "14 Units",
-      ar: "١٤ وحدة"
+      en: "4 weeks",
+      ar: "٤ أسابيع"
     },
-    lessons: 14,
+    lessons: 6, // يمكنك تغييره حسب الدورة
     price: {
-      en: "0",
-      ar: "٠"
+      en: "79",
+      ar: "٧٩"
     },
-    featured: true
+    featured: true // اجعليها true إذا أردتِ ظهورها في قسم Featured
   }
 ];
+
 
 const LEVEL_DESCRIPTIONS = {
   A1:{
